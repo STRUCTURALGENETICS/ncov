@@ -12,50 +12,55 @@
 
 The following steps will prepare you to run complete analyses of SARS-CoV-2 data by installing required software and running a simple example workflow.
 
-## 1. Make a copy of this tutorial
+## 1. Setup your Nextstrain environment with Conda
 
-There are two ways to do this:
+The following instructions use [Conda](https://docs.conda.io/en/latest/) to install the tools you'll need for this tutorial.
+Conda is a package and environment management system that allows you to install Python and other software into controlled environments without disrupting other software you have installed (e.g., on your computer, your shared cluster, etc.).
 
-  * [Recommended] If you're familiar with git, clone this repository either via the web interface, a GUI such as [GitKraken](https://www.gitkraken.com/), or the command line:
+<p style="color: #055160; background-color: #cff4fc; border-color: #b6effb; padding: 1em; border-radius: .25rem;">
+If you use Microsoft Windows, [install the Windows Subsystem for Linux (WSL)](https://docs.microsoft.com/en-us/windows/wsl/install-win10).
+Follow [instructions to open a new WSL window for your Linux distribution](https://docs.microsoft.com/en-us/windows/wsl/wsl-config) and then run the following commands.
+</p>
+
+[Install Miniconda with Python 3 for your operating system](https://docs.conda.io/en/latest/miniconda.html), update Conda to the latest version, and install Mamba for faster installation.
+
+```bash
+conda update -n base conda
+conda install -n base -c conda-forge mamba
+```
+
+Create a Conda environment named ``nextstrain``.
+This command will install [Git](https://git-scm.com/) and [Snakemake](https://snakemake.readthedocs.io/en/stable/), the tools you'll need to download and run the workflow.
+
+```bash
+mamba create -n nextstrain -c conda-forge -c bioconda git snakemake
+```
+
+Activate the Nextstrain environment.
+
+```bash
+conda activate nextstrain
+```
+
+## 2. Make a copy of the ncov workflow
+
+Use Git to download a copy of the ncov repository containing the workflow and this tutorial.
 
 ```bash
 git clone https://github.com/nextstrain/ncov.git
+cd ncov
 ```
 
-  * [Alternative] If you're not familiar with git, you can also download a copy of these files via the buttons on the left.
-
-## 2. Setup your Nextstrain environment
-
-Create a Nextstrain conda environment with augur and auspice installed.
-If you do not have conda installed already, [see our full installation instructions for more details](https://nextstrain.org/docs/getting-started/local-installation).
-If you are running Windows, [see our documentation about setting up the Windows Subsystem for Linux (WSL)](https://nextstrain.org/docs/getting-started/windows-help).
-
-```bash
-curl http://data.nextstrain.org/nextstrain.yml --compressed -o nextstrain.yml
-conda env create -f nextstrain.yml
-conda activate nextstrain
-npm install --global auspice
-```
+Alternately, [download a compressed copy of the ncov repository](https://github.com/nextstrain/ncov/archive/refs/heads/master.zip) called `ncov-master.zip` to your desktop.
+Open this file to decompress it and create a directory called `ncov-master/` with the contents of the workflow in it.
+Navigate to this directory from the command line.
 
 ## 3. Run a basic analysis with example data
 
 Run a basic workflow with example data, to confirm that your Nextstrain environment is properly configured.
-First, change into the `ncov` repository's directory.
 
 ```bash
-cd ncov
-```
-
-Then, uncompress the example sequence data we include in the repository.
-
-```bash
-gzip -d -c data/example_sequences.fasta.gz > data/example_sequences.fasta
-```
-
-Finally, run the basic workflow with these example data.
-
-```bash
-snakemake --cores 4 --profile ./my_profiles/getting_started
+snakemake --cores 4 --use-conda --profile ./my_profiles/getting_started
 ```
 
 The `getting_started` profile produces a minimal global phylogeny for visualization in auspice.
@@ -63,7 +68,7 @@ This workflow should complete in about 5 minutes on a MacBook Pro (2.7 GHz Intel
 
 ## 4. Visualize the phylogeny for example data
 
-Go to [http://auspice.us](http://auspice.us) in your browser.
+[Open http://auspice.us](http://auspice.us) in your browser.
 Drag and drop the JSON file `auspice/ncov_global.json` anywhere on the [http://auspice.us](http://auspice.us) landing page, to visualize the resulting phylogeny.
 
 ## Advanced reading: considerations for keeping a 'Location Build' up-to-date
