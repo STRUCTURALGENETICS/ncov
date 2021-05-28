@@ -46,8 +46,6 @@ The sequence itself is a **[consensus genome](https://en.wikipedia.org/wiki/Cons
 For a basic QC and preliminary analysis of your sequence data, you can use [clades.nextstrain.org](https://clades.nextstrain.org/).
 This tool will check your sequences for excess divergence, clustered differences from the reference, and missing or ambiguous data. In addition, it will assign nextstrain clades and call mutations relative to the reference.
 
----
-
 ### Formatting your metadata
 
 Nextstrain accommodates many kinds of metadata, so long as it is in a `TSV` format.
@@ -77,15 +75,14 @@ A valid metadata file must include the following fields:
 
 Please be aware that **our current pipeline will filter out any genomes with an unknown date - you can change this in your own pipeline.**
 
-
-#### Missing metadata:
+#### Missing metadata
 
 Missing data is to be expected for certain fields.
 In general, **missing data is represented by an empty string or a question mark character.**
 There is one important difference: if a discrete trait reconstruction (e.g. via `augur traits`) is to be run on this column, then a value of `?` will be inferred, whereas the empty string will be treated as missing data in the output. See below for how to represent uncertainty in sample collection date.
 
+#### General formatting tips
 
-#### General formatting tips:
 - **The _order_ of the fields doesn't matter**; but if you are going to join your metadata with the global collection then it's easiest to keep them in the same order!
 - **Not all fields are currently used**, but this may change in the future.
 - Data is **case sensitive**
@@ -93,11 +90,12 @@ There is one important difference: if a discrete trait reconstruction (e.g. via 
 Adding a new value to these columns isn't a problem at all, but there are a few extra steps to take; see the [customization guide](customizing-analysis.md).
 - **You can color by any of these fields in the Auspice visualization**. Which exact columns are used, and which colours are used for each value is completely customisable; see the [customization guide](customizing-visualization.md).
 
-
 #### Formatting metadata in Excel
+
 You can also create a TSV file in Excel.
 However, due to issues with auto-formatting of certain fields in Excel (like dates), we don't recommend this as a first option.
-If you do edit a file in Excel, open it afterwards in a text-editor to check it looks as it should!
+If you do edit a file in Excel, open it afterwards in a text editor to check it looks as it should.
+
 1. Create a spreadsheet where each row is a sample, and each column is a metadata field
 2. Ensure your spreadsheet meets the requirements outlined above. Pay special attention to date formats; see [this guide to date formatting in Excel](https://support.microsoft.com/en-us/office/format-a-date-the-way-you-want-8e10019e-d5d8-47a1-ba95-db95123d273e?ui=en-us&rs=en-us&ad=us).
 3. Click on `File > Save as`
@@ -107,10 +105,10 @@ If you do edit a file in Excel, open it afterwards in a text-editor to check it 
 
 ## Curate data from the full GISAID database
 
----
 ## Contextualizing your data
 
 ### Background / contextual sequences
+
 Making inferences about a sample's origin is strongly dependent on the makeup of your dataset: the model can't infer a transmission from an origin it doesn't have any (or enough) data from.
 
 To address this, we strongly recommend adding contextual background sequences to your dataset. To make this easier, we provide a continually-updated dataset, pre-formatted for Nextstrain, through [GISAID](https://gisaid.org). To download this dataset:
