@@ -10,15 +10,24 @@
 <!-- WARNING -->
 <!-- WARNING -->
 
-**We've prepared an example dataset in the `data` directory. If you'd like to move ahead with this tutorial with this example dataset, you can skip this section.
-If you'd like to use your own data, read on.**
+<p style="color: #055160; background-color: #cff4fc; border-color: #b6effb; padding: 1em; border-radius: .25rem;">
+We've prepared an example dataset in the `data` directory.
+If you'd like to move ahead with this tutorial with this example dataset, [skip to the next section](orientation-workflow.md).
+If you'd like to prepare your own data, read on.
+</p>
 
 To use Nextstrain to analyze your own data, you'll need to prepare two files:
 
 1. A `fasta` file with viral genomic sequences
 2. A corresponding `tsv` file with metadata describing each sequence
 
-We've created an example dataset in the `data` directory. This consists of a compressed FASTA file with viral genomes sourced from Genbank (`example_sequences.fasta.gz`) and a corresponding TSV with metadata describing these sequences (`example_metadata.tsv`).
+We describe the following ways to prepare data for a SARS-CoV-2 analysis:
+
+1. <a href="#prepare-your-own-local-data">Prepare your own local data</a> for quality control prior to submission to a public database.
+1. <a href="#curate-data-from-gisaid-search-and-downloads">Curate data from GISAID search and downloads</a> to prepare a regional analyses based on local sequences identified through GISAID's search interface and contextual sequences for your region from GISAID's "nextregions" downloads.
+1. <a href="#curate-data-from-the-full-gisaid-database">Curate data from the full GISAID database</a> to prepare a custom analysis by downloading the full database and querying for specific strains locally with [Augur](https://docs.nextstrain.org/projects/augur/en/stable/index.html).
+
+## Prepare your own local data
 
 ### Formatting your sequence data
 
@@ -94,6 +103,9 @@ If you do edit a file in Excel, open it afterwards in a text-editor to check it 
 3. Click on `File > Save as`
 4. Choose `Text (Tab delimited) (*.txt)` and enter a filename ending in `.tsv`
 
+## Curate data from GISAID search and downloads
+
+## Curate data from the full GISAID database
 
 ---
 ## Contextualizing your data
