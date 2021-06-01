@@ -103,6 +103,107 @@ If you do edit a file in Excel, open it afterwards in a text editor to check it 
 
 ## Curate data from GISAID search and downloads
 
+The following instructions describe how to curate data for a region-specific analysis (e.g., identifying recent introductions into Washington State) using GISAID's "Search" page and curated regional data from the "Downloads" window.
+Inferences about a sample's origin strongly depend on the composition of your dataset.
+For example, discrete trait analysis models cannot infer transmission from an origin that is not present in your data.
+We show how to overcome this issue by adding previously curated contextual sequences from Nextstrain to your region-specific dataset.
+
+### Login to GISAID
+
+Navigate to [GISAID (gisaid.org)](https://www.gisaid.org/) and select the "Login" link.
+
+![GISAID homepage with login link](images/gisaid-homepage.png)
+
+Login to your GISAID account.
+If you do not have an account yet, register for one (it's free) by selecting the "Registration" link.
+
+![GISAID login page with registration link](images/gisaid-login.png)
+
+Select "EpiCoV" from the top navigation bar.
+
+![GISAID navigation bar with "EpiCoV" link](images/gisaid-navigation-bar.png)
+
+### Search for region-specific data
+
+Select "Search" from the EpiCoV navigation bar.
+
+![GISAID EpiCoV navigation bar with "Search" link](images/gisaid-epicov-navigation-bar.png)
+
+Find the "Location" field and start typing "North America /".
+As you type, the field will suggest more specific geographic scales.
+
+![GISAID initial search interface](images/gisaid-initial-search-interface.png)
+
+Finish by typing "North America / USA / Washington".
+Select all strains collected between May 1 and June 1 with complete genome sequences and collection dates.
+Click the checkbox in the header row of the results display, to select all strains that match the search parameters.
+
+![GISAID search results for "Washington"](images/gisaid-search-results.png)
+
+<p style="color: #212529; background-color: #ffc107; border-color: #b6effb; padding: 1em; border-radius: .25rem;">
+GISAID limits the number of records you can download at once to 5000.
+If you need to download more records, constrain your search results to smaller windows of time by collection date and download data in these smaller batches.
+</p>
+
+Select the "Download" button in the bottom right of the search results.
+From the resulting "Download" window, select "Input for the Augur pipeline" as the download format.
+
+![GISAID search download window showing "Input for the Augur pipeline" option](images/gisaid-search-download-window.png)
+
+Select the "Download" button and save the resulting file (named like `gisaid_auspice_input_hcov-19_2021_06_01_17.tar`) to the `data/` directory.
+This tar archive contains compressed metadata and sequences named like `1622567829294.metadata.tsv.xz` and `1622567829294.sequences.fasta.xz`, respectively.
+You can use this tar file as an input for the Nextstrain workflow, as shown below, and let the workflow extract the data for you.
+
+```yaml
+# Define inputs for the workflow.
+inputs:
+  - name: washington
+    # The workflow will detect and extract the metadata and sequences
+    # from GISAID tar archives.
+    metadata: data/gisaid_auspice_input_hcov-19_2021_06_01_17.tar
+    sequences: data/gisaid_auspice_input_hcov-19_2021_06_01_17.tar
+```
+
+Alternately, you can extract these files into the `data/` directory prior to analysis.
+
+```bash
+tar xvf data/gisaid_auspice_input_hcov-19_2021_06_01_17.tar
+```
+
+You can use these extracted files as inputs for the workflow.
+
+```yaml
+# Define inputs for the workflow.
+inputs:
+  - name: washington
+    # The workflow also accepts compressed metadata and sequences
+    # from GISAID.
+    metadata: data/1622567829294.metadata.tsv.xz
+    sequences: data/1622567829294.sequences.fasta.xz
+```
+
+### Download contextual data for your region of interest
+
+Next, select the "Downloads" link from the EpiCoV navigation bar.
+
+![GISAID EpiCoV navigation bar with "Downloads" link](images/gisaid-epicov-navigation-bar-with-downloads.png)
+
+Scroll to the "Genomic epidemiology" section and select the "nextregions" button.
+
+![GISAID downloads window](images/gisaid-downloads-window.png)
+
+Select the major region that corresponds to your region-specific data above (e.g., "North America").
+
+![GISAID "nextregions" download window](images/gisaid-nextregions-download-window.png)
+
+Agree to the terms and conditions and download the corresponding file (named like `ncov_north-america.tar.gz`) to the `data/` directory.
+
+![GISAID "nextregions" download terms and conditions](images/gisaid-nextregions-download-terms-and-conditions.png)
+
+This compressed tar archive contains metadata and sequences corresponding to [a recent Nextstrain build for that region](https://nextstrain.org/sars-cov-2).
+For example, the "North America" download contains data from [Nextstrain's North America build](https://nextstrain.org/ncov/north-america).
+These regional Nextstrain builds contain data from a specific region and contextual data from all other regions in the world.
+
 ## Curate data from the full GISAID database
 
 ## Contextualizing your data
