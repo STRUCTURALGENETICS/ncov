@@ -153,6 +153,7 @@ From the resulting "Download" window, select "Input for the Augur pipeline" as t
 Select the "Download" button and save the resulting file (named like `gisaid_auspice_input_hcov-19_2021_06_01_17.tar`) to the `data/` directory.
 This tar archive contains compressed metadata and sequences named like `1622567829294.metadata.tsv.xz` and `1622567829294.sequences.fasta.xz`, respectively.
 You can use this tar file as an input for the Nextstrain workflow, as shown below, and let the workflow extract the data for you.
+Create a new configuration file, `builds.yaml`, in the top-level of the `ncov` directory that defines your analysis or "builds".
 
 ```yaml
 # Define inputs for the workflow.
@@ -200,33 +201,190 @@ Agree to the terms and conditions and download the corresponding file (named lik
 
 ![GISAID "nextregions" download terms and conditions](images/gisaid-nextregions-download-terms-and-conditions.png)
 
-This compressed tar archive contains metadata and sequences corresponding to [a recent Nextstrain build for that region](https://nextstrain.org/sars-cov-2).
+This compressed tar archive contains metadata and sequences corresponding to [a recent Nextstrain build for that region](https://nextstrain.org/sars-cov-2) with names like `ncov_north-america.tsv` and `ncov_north-america.fasta`, respectively.
 For example, the "North America" download contains data from [Nextstrain's North America build](https://nextstrain.org/ncov/north-america).
 These regional Nextstrain builds contain data from a specific region and contextual data from all other regions in the world.
+By default, GISAID provides these "nextregions" data in the "Input for the Augur pipeline" format.
+
+As with the tar archive from the search results above, you can use the "nextregions" compressed tar archives as input to the Nextstrain workflow and the workflow will extract the appropriate contents for you.
+For example, you could update your `inputs` in the `builds.yaml` file from above to include the North American data as follows.
+
+```yaml
+# Define inputs for the workflow.
+inputs:
+  - name: washington
+    # The workflow will detect and extract the metadata and sequences
+    # from GISAID tar archives.
+    metadata: data/gisaid_auspice_input_hcov-19_2021_06_01_17.tar
+    sequences: data/gisaid_auspice_input_hcov-19_2021_06_01_17.tar
+  - name: north-america
+    # The workflow will similarly detect and extract metadata and
+    # sequences from compressed tar archives.
+    metadata: data/ncov_north-america.tar.gz
+    sequences: data/ncov_north-america.tar.gz
+```
+
+Alternately, you can extract the data from the compressed tar archive into the `data/` directory.
+
+```bash
+tar zxvf data/ncov_north-america.tar.gz
+```
+
+You can use these extracted files as inputs for the workflow.
+
+```yaml
+# Define inputs for the workflow.
+inputs:
+  - name: washington
+    # The workflow will detect and extract the metadata and sequences
+    # from GISAID tar archives.
+    metadata: data/gisaid_auspice_input_hcov-19_2021_06_01_17.tar
+    sequences: data/gisaid_auspice_input_hcov-19_2021_06_01_17.tar
+  - name: north-america
+    # The workflow supports uncompressed or compressed input files.
+    metadata: data/ncov_north-america.tsv
+    sequences: data/ncov_north-america.fasta
+```
+
+By default, the workflow will use all distinct sequences to create a phylogeny without any subsampling.
+You now have all of the data you need to run your analysis and can [continue to the next section of the tutorial](orientation-workflow.md).
 
 ## Curate data from the full GISAID database
 
-## Contextualizing your data
+Some analyses require custom subsampling of the full GISAID database to most effectively understand SARS-CoV-2 evolution.
+For example, analyses that investigate specific variants or transmission patterns within localized outbreaks benefit from customized contextual data.
+These specific searches can easily exceed the 5000-record download limit from GISAID's search interface and the diversity of data available in the Nextstrain "nextregions" downloads.
 
-### Background / contextual sequences
+The following instructions describe how to curate data for a region-specific analysis using the full GISAID sequence and metadata files.
+As with [the curation process described above](data-prep.md#curate-data-from-gisaid-search-and-downloads), we describe how to select contextual data from the rest of the world to improve estimates of introductions to your region.
+This type of analysis also provides a path to selecting contextual data that are as genetically similar as possible to your region's data.
 
-Making inferences about a sample's origin is strongly dependent on the makeup of your dataset: the model can't infer a transmission from an origin it doesn't have any (or enough) data from.
+In this example, we will select the following subsets of GISAID data:
 
-To address this, we strongly recommend adding contextual background sequences to your dataset. To make this easier, we provide a continually-updated dataset, pre-formatted for Nextstrain, through [GISAID](https://gisaid.org). To download this dataset:
+1. all data from Washington State in the last two months
+1. a random sample of data from North America (excluding Washington) in the last two months
+1. a random sample of data from outside North America in the last year
 
-1. Register for a GISAID account if you don't have one already and then log into GISAID's EpiCoV database.
-2. Click "Downloads" to bring up a modal window.
-3. If you scroll down to the bottom of this modal window you should see a heading of "Genomic epidemiology" that includes entries "FASTA" and "metadata".
-4. Click on "metadata" to download a compressed file of the form `metadata_2021-04-08_08-30.tsv.gz`. Uncompress this file and save as `data/gisaid_metadata.tsv`.
-5. Click on "FASTA" to download a compressed file of the form `sequences_2021-04-08_08-30.fasta.gz`. Keep this file compressed and save as `data/gisaid_sequences.fasta.gz`.
+### Download all SARS-CoV-2 sequences and metadata from GISAID
 
-![gisaid_downloads](images/gisaid_downloads.png)
+The following instructions assume you have already registered for a free GISAID account, logged into that account, and selected the "EpiCoV" link from the navigation bar, [as described above](data-prep.md#login-to-gisaid).
+Select the "Downloads" link from the EpiCoV navigation bar.
 
-GISAID maintains multiple tiers of access and many users of GISAID will initially lack access to the "FASTA" and "metadata" under "Genomic epidemiology" (the entries will just be absent). If you find that these files are missing for you, you'll need to email GISAID at hCoV-19@gisaid.org to request access to the specific "FASTA" and "metadata" files under "Genomic epidemiology". Somewhat confusingly, there are separate "FASTA" and "metadata" entries listed under the heading "Download packages". These files are a slightly different format and are not directly compatible with the Nextstrain ncov pipeline. Please feel free to let us know at [discussion.nextstrain.org](https://discussion.nextstrain.org/t/nextmeta-and-nextfasta-not-on-gisaid/224) if you're having difficulties accessing these files.
+![GISAID EpiCoV navigation bar with "Downloads" link](images/gisaid-epicov-navigation-bar-with-downloads.png)
 
-The Nextstrain team uses this pipeline to include the latest sequences and metadata from GISAID in our builds: [nextstrain/ncov-ingest](https://github.com/nextstrain/ncov-ingest).
+Find the "Download packages" section and select the "FASTA" button.
 
-### Subsampling
+![GISAID download window with the "Download packages" sections](images/gisaid-download-packages-window.png)
+
+Agree to the terms and conditions and download the corresponding file (named like `sequences_fasta_2021_06_01.tar.xz`) to the `data/` directory.
+Next, select the "metadata" button from that same "Download packages" section and download the corresponding file (named like `metadata_tsv_2021_06_01.tar.xz`) to the `data/` directory.
+
+[We use these data in our official Nextstrain builds](https://github.com/nextstrain/ncov-ingest).
+If you have sufficient computing resources, you can use these files as `inputs` for the workflow in a `builds.yaml` like the one described above.
+However, the workflow starts by aligning all input sequences to a reference and this alignment can take hours to complete even with multiple cores.
+As an alternative, we show how to select specific data from these large files prior to starting the workflow.
+
+### Prepare GISAID data for Augur
+
+Nextstrain's bioinformatics toolkit, [Augur](https://docs.nextstrain.org/projects/augur/en/stable/index.html), does not support GISAID's default formatting (e.g., spaces are not allowed in sequence ids, additional metadata in the FASTA defline is unnecessary, "hCoV-19/" prefixes are not consistently used across all databases, composite "location" fields in the metadata are not tab-delimited, etc.).
+As a result, the workflow includes tools to prepare GISAID data for processing by Augur.
+
+First, prepare the sequence data.
+This step strips prefixes from strain ids in sequence records, removes whitespace from the strain ids, removes additional metadata in the FASTA defline, and removes duplicate sequences present for the same strain id.
+
+```bash
+python3 scripts/sanitize_sequences.py \
+    --sequences data/sequences_fasta_2021_06_01.tar.xz \
+    --strip-prefixes "hCoV-19/" \
+    --output data/sequences_gisaid.fasta.gz
+```
+
+Next, prepare the metadata.
+This step parses the composite `Location` field into `region`, `country`, `division`, and `location` fields, renames fields with special names in Augur, and strips prefixes from strain names to match the sequence data above.
+
+```bash
+python3 scripts/sanitize_metadata.py \
+    --metadata data/metadata_tsv_2021_06_01.tar.xz \
+    --parse-location-field Location \
+    --rename-fields 'Virus name=strain' 'Accession ID=gisaid_epi_isl' 'Collection date=date' \
+    --strip-prefixes "hCoV-19/" \
+    --output data/metadata_gisaid.tsv.gz
+```
+
+### Select region-specific data
+
+Select data corresponding to your region of interest.
+In this example, we select strains from Washington State collected between April 1 and June 1, 2021.
+
+```bash
+augur filter \
+    --metadata data/metadata_gisaid.tsv.gz \
+    --query "(country == 'USA') & (division == 'Washington')" \
+    --min-date 2021-04-01 \
+    --max-date 2021-06-01 \
+    --exclude-ambiguous-dates-by any \
+    --output-strains strains_washington.txt
+```
+
+As of June 1, 2021, the corresponding output contains
+
+### Select contextual data for your region of interest
+
+Select a random sample of recent data from your region's continent.
+In this example, we will randomly sample 1,000 strains collected between April 1 and June 1, 2021 from North American data, excluding data we've already selected from Washington.
+
+```bash
+augur filter \
+    --metadata data/metadata_gisaid.tsv.gz \
+    --query "(region == 'North America') & (division != 'Washington')" \
+    --min-date 2021-04-01 \
+    --max-date 2021-06-01 \
+    --exclude-ambiguous-dates-by any \
+    --subsample-max-sequences 1000 \
+    --output-strains strains_north-america.txt
+```
+
+Select a random sample of recent data from the rest of the world.
+Here, we will randomly sample 1,000 strains collected between February 1 and June 1, 2021 from all continents except North America.
+To evenly sample all regions through time, we also group data by region, year, and month and sample evenly from these groups.
+
+```bash
+augur filter \
+    --metadata data/metadata_gisaid.tsv.gz \
+    --query "region != 'North America'" \
+    --min-date 2021-02-01 \
+    --max-date 2021-06-01 \
+    --exclude-ambiguous-dates-by any \
+    --subsample-max-sequences 1000 \
+    --group-by region year month \
+    --output-strains strains_global.txt
+```
+
+### Extract sequences and metadata for selected strains
+
+Now that you've selected a subset of strains the full GISAID database, extract the corresponding sequences and metadata to use as inputs for the Nextstrain workflow.
+
+```bash
+augur filter \
+    --metadata data/metadata_gisaid.tsv.gz \
+    --sequences data/sequences_gisaid.fasta.gz \
+    --exclude-all \
+    --include strains_washington.txt strains_north-america.txt strains_global.txt \
+    --output-sequences data/subsampled_sequences_gisaid.fasta.gz \
+    --output-metadata data/subsampled_metadata_gisaid.tsv.gz
+```
+
+You can use these extracted files as inputs for the workflow.
+
+```yaml
+# Define inputs for the workflow.
+inputs:
+  - name: subsampled-gisaid
+    metadata: data/subsampled_metadata_gisaid.tsv.gz
+    sequences: data/subsampled_sequences_gisaid.fasta.gz
+```
+
+## Subsampling
 
 We've outlined several methods for subsampling, including builds with a focus area and genetically similar contextual sequences, in the [section on customizing your analysis](customizing-analysis.md#subsampling).
 
