@@ -16,7 +16,6 @@ The following steps will prepare you to run complete analyses of SARS-CoV-2 data
 
 The following instructions use [Conda](https://docs.conda.io/en/latest/) to install the tools you'll need for this tutorial.
 Conda is a package and environment management system that allows you to install Python and other software into controlled environments without disrupting other software you have installed (e.g., on your computer, your shared cluster, etc.).
-To install the full Nextstrain toolkit, [see the Nextstrain installation documentation](https://docs.nextstrain.org/en/latest/install-nextstrain.html).
 
 <p style="color: #055160; background-color: #cff4fc; border-color: #b6effb; padding: 1em; border-radius: .25rem;">
 If you use Microsoft Windows, [install the Windows Subsystem for Linux (WSL)](https://docs.microsoft.com/en-us/windows/wsl/install-win10).
@@ -33,17 +32,24 @@ conda install -n base -c conda-forge mamba
 ```
 
 Create a Conda environment named ``nextstrain``.
-This command will install [Git](https://git-scm.com/), [Snakemake](https://snakemake.readthedocs.io/en/stable/), and [the Nextstrain command line interface (CLI)](https://docs.nextstrain.org/projects/cli/en/latest/), the tools you'll need to download and run the workflow.
+This command will install [Git](https://git-scm.com/), [Snakemake](https://snakemake.readthedocs.io/en/stable/), and [Nextstrain's full toolkit](https://docs.nextstrain.org/en/latest/install-nextstrain.html), the tools you'll need to work through this tutorial.
 
 ```bash
 mamba create -n nextstrain -c conda-forge -c bioconda \
-  git snakemake nextstrain-cli
+  augur auspice nextstrain-cli nextalign snakemake awscli git pip
 ```
 
-Activate the Nextstrain environment.
+Confirm that the installation worked.
 
 ```bash
 conda activate nextstrain
+nextstrain check-setup --set-default
+```
+
+The final output from the last command should look like this:
+
+```bash
+Setting default environment to native.
 ```
 
 ### Update the Nextstrain environment
