@@ -263,7 +263,7 @@ In this example, we will select the following subsets of GISAID data:
 
 1. all data from Washington State in the last two months
 1. a random sample of data from North America (excluding Washington) in the last two months
-1. a random sample of data from outside North America in the last year
+1. a random sample of data from outside North America in the last six months
 
 ### Download all SARS-CoV-2 sequences and metadata from GISAID
 
@@ -326,7 +326,7 @@ augur filter \
     --output-strains strains_washington.txt
 ```
 
-As of June 1, 2021, the corresponding output contains
+As of June 1, 2021, the corresponding output contains 8,193 strains.
 
 ### Select contextual data for your region of interest
 
@@ -345,14 +345,14 @@ augur filter \
 ```
 
 Select a random sample of recent data from the rest of the world.
-Here, we will randomly sample 1,000 strains collected between February 1 and June 1, 2021 from all continents except North America.
+Here, we will randomly sample 1,000 strains collected between December 1, 2020 and June 1, 2021 from all continents except North America.
 To evenly sample all regions through time, we also group data by region, year, and month and sample evenly from these groups.
 
 ```bash
 augur filter \
     --metadata data/metadata_gisaid.tsv.gz \
     --query "region != 'North America'" \
-    --min-date 2021-02-01 \
+    --min-date 2020-12-01 \
     --max-date 2021-06-01 \
     --exclude-ambiguous-dates-by any \
     --subsample-max-sequences 1000 \
