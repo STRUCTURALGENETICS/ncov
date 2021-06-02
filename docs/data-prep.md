@@ -299,6 +299,15 @@ python3 scripts/sanitize_sequences.py \
     --output data/sequences_gisaid.fasta.gz
 ```
 
+To speed up filtering steps later on, index the sequences with Augur.
+This command creates a tab-delimited file describing the composition of each sequence.
+
+```bash
+augur index \
+    --sequences data/sequences_gisaid.fasta.gz \
+    --output data/sequence_index_gisaid.tsv.gz
+```
+
 Next, prepare the metadata.
 This step parses the composite `Location` field into `region`, `country`, `division`, and `location` fields, renames fields with special names in Augur, and strips prefixes from strain names to match the sequence data above.
 
@@ -367,6 +376,7 @@ Now that you've selected a subset of strains the full GISAID database, extract t
 ```bash
 augur filter \
     --metadata data/metadata_gisaid.tsv.gz \
+    --sequence-index data/sequence_index_gisaid.tsv.gz \
     --sequences data/sequences_gisaid.fasta.gz \
     --exclude-all \
     --include strains_washington.txt strains_north-america.txt strains_global.txt \
